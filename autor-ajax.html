@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>Título da página</title>
+    <meta charset="utf-8"/>
+	
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <div class="header">
+            <h1>Cadastro de Livros</h1>
+        </div>
+        <div>
+            <div>
+                <form>
+                    <div>
+                        <label for="titulo">Título</label>
+                        <input id="titulo" type="text" name="titulo" value="" />
+                    </div>
+                    <div>
+                        <label for="preco">Preço</label>
+                        <input id="preco" type="text" name="preco" value="" />
+                    </div>
+                    
+                    <div>
+                        <label></label>
+                        <input type="button" id="gravar" value="gravar"/>
+                    </div>
+                </form>
+
+            </div>
+            <br/>
+            <div>
+                <table id="listagem">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Título</th>
+							<th>Preço (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tcorpo">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+	<script>
+	jQuery.support.cors = true;
+	jQuery(document).ready(function($) {
+	
+		$.ajax({
+			type : "GET",
+			contentType : "application/json;charset=UTF-8",
+			url : "http://localhost:8080/autores/",
+			
+			success : function(data) {
+				console.log("SUCCESS: ", data);
+				
+				var table = $("#listagem");
+				
+				$.each(data, function(rowIndex, r) {
+					var row = $("<tr/>");
+					$.each(r, function(colIndex, c) { 
+						row.append($("<t"+(rowIndex == 0 ?  "h" : "d")+"/>").text(c));
+					});
+					table.append(row);
+				});
+			},
+			error : function(e) {
+				console.log("ERROR: ", e);
+			},
+			done : function(e) {
+				console.log("DONE");
+			}
+		});
+	
+		$("#gravar").click(function(event) {
+			event.preventDefault();
+			
+			var json = {
+				titulo: $("#titulo").val(),
+				preco:  $("#preco").val()
+			};
+			
+			console.log(json);
+			console.log(JSON.stringify(json));
+			
+			$.ajax({
+				type : "POST",
+				contentType : "application/json;charset=UTF-8",
+				url : "http://localhost:8080/autores/",
+				data : JSON.stringify(json),
+				dataType : 'json',
+				success : function(data) {
+					console.log("SUCCESS: ", data);
+					
+					$("form").submit();
+				},
+				error : function(e) {
+					console.log("ERROR: ", e);
+				},
+				done : function(e) {
+					console.log("DONE");				
+				}
+			});
+		});
+	});
+	</script>
+</body>
